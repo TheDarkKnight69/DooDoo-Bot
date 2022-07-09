@@ -1,0 +1,3 @@
+[2022-07-09 06:09:10] [INFO    ] discord.client: logging in using static token
+[2022-07-09 06:09:11] [INFO    ] discord.gateway: Shard ID None has sent the IDENTIFY payload.
+[2022-07-09 06:09:11] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d03c0677ec4f1212c4b9e60599c1e4ad).

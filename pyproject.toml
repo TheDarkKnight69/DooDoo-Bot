@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "repl_nix_Alfred"
+version = "0.1.0"
+description = ""
+authors = ["BruceWayne34 <<>>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Flask = "^2.1.2"
+aiohttp = "^3.7"
+discord = "^1.7.3"
+hostsman = "^1.1.5"
+parsedatetime = "^2.6"
+typing-extensions = "^4.3.0"
+asyncpg = "^0.25.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

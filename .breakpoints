@@ -1,0 +1,20 @@
+{
+  "files": {
+    "requirements.txt": [
+      {
+        "id": "71bf2927-3dd0-4773-8de7-d9ec1b9378e3",
+        "line": 1,
+        "version": 7,
+        "index": 0
+      }
+    ],
+    "venv/lib/python3.8/site-packages/jishaku/cog.py": [
+      {
+        "id": "407a5684-6f87-42ac-aec5-4a7c724060b7",
+        "line": 51,
+        "version": 1,
+        "index": 1378
+      }
+    ]
+  }
+}
