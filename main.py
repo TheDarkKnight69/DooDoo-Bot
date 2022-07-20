@@ -4,6 +4,7 @@ from discord import app_commands
 from keep_alive import keep_alive
 import asyncio
 import random
+import json
 import os
 from pretty_help import PrettyHelp, PrettyMenu
 import logging
@@ -12,12 +13,16 @@ import logging
 
 MY_GUILD = discord.Object(id=894451313818099783)  # replace with your guild id
 
+def get_prefix(client, message):
+  with open('prefix.json', 'r') as p:
+    prefixes = json.load(p)
 
+  return prefixes[str(message.guild.id)]
 
 class MyClient(commands.Bot):
     def __init__(self, *, intents: discord.Intents):
         super().__init__(
-          command_prefix = commands.when_mentioned_or("."),
+          command_prefix = get_prefix,
           status = discord.Status.dnd,
           case_sensitive = False,
           intents=intents)
@@ -26,7 +31,7 @@ class MyClient(commands.Bot):
         # allows all the extra state to be opt-in.
         # Whenever you want to work with application commands, your tree is used
         # to store and work with them.
-        # Note: When using commands.Bot instead of discord.Client, the bot will
+        # Note: When using commands.client instead of discord.client, the client will
         # maintain its own tree instead.
       
 
@@ -44,10 +49,13 @@ class MyClient(commands.Bot):
         
 
 
-intents = discord.Intents().all()
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True
 client = MyClient(intents=intents)
 
-
+client.remove_command('about')
+client.remove_command('uptime')
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 
 
@@ -58,6 +66,29 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 async def on_ready():
     print(f'Logged in as {client.user} (ID: {client.user.id})')
     print('------')
+    
+  
+@client.event
+async def on_guild_join(guild):
+  with open('prefix.json', 'r') as p:
+    prefixes = json.load(p)
+
+  prefixes[str(guild.id)] = "."
+
+  with open('prefix.json', 'w') as p:
+    json.dump(prefixes, p , indent = 4)
+
+
+@client.event
+async def on_guild_remove(guild):
+  with open('prefix.json', 'r') as p:
+    prefixes = json.load(p)
+
+  prefixes.pop(str(guild.id))
+
+  with open('prefix.json', 'w') as p:
+    json.dump(prefixes, p , indent = 4)
+  
 
 
 @client.tree.command()

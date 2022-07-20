@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 from typing import Optional, Set, List
 
+COLOUR = discord.Color.random()
 
 class HelpDropdown(discord.ui.Select):
   def __init__(self, help_command: "HelpCommand", options: List[discord.SelectOption]):
@@ -37,7 +38,7 @@ class HelpView(discord.ui.View):
 
 class HelpCommand(commands.MinimalHelpCommand):
   def get_command_signature(self, command):
-    return f"{self.context.clean_prefix}{command.qualified_name} {command.signature}"
+    return '%s%s %s' % (self.context.clean_prefix, command.qualified_name, command.signature)
   async def _cog_select_options(self) -> List[discord.SelectOption]:
     options: List[discord.SelectOption] = []
     options.append(discord.SelectOption(
@@ -102,10 +103,15 @@ class HelpCommand(commands.MinimalHelpCommand):
     return embed
     
   async def send_bot_help(self, mapping: dict):
-    embed = await self.bot_help_embed(mapping)
+    embed = discord.Embed(title = "Bot Help", description = 
+                          
+      f"Hello! Welcome to the help page.\nUse {self.context.clean_prefix}help command for more info on a command.\nUse {self.context.clean_prefix}help category for more info on a category.\nUse the dropdown menu below to select a category."
+)
+    embed.add_field(name = "Support Server", value = "For more help, consider joining the official server over at https://discord.gg/ygxUtu3gEF", inline = False)
+    embed.add_field(name = "Who are you?", value = f"I'm a bot made by Damian Wayne#7983. I'm a pretty neat Discord bot! I've been running since. I have features such as moderation, memes, image manipulation, and more to come. You can get more information on my commands by using the dropdown below.\n\n\n\n\n I'm also open source [Github](https://github.com/TheDarkKnight69/DooDoo-Bot)")
     options = await self._cog_select_options()
     self.response = await self.get_destination().send(embed = embed, view = HelpView(self, options))
-
+    
   async def send_command_help(self, command: commands.Command):
     emoji = getattr(command.cog, "COG_EMOJI", None)
     embed = await self._help_embed(
@@ -120,9 +126,9 @@ class HelpCommand(commands.MinimalHelpCommand):
       title = "Bot Commands",
       description = self.context.bot.description,
       mapping = mapping,
-    
     )
-
+  
+  
   async def cog_help_embed(self, cog: commands.Cog) -> discord.Embed:
     emoji = getattr(cog, "COG_EMOJI", None)
     return await self._help_embed(

@@ -110,8 +110,9 @@ class Moderation(commands.Cog):
   @commands.hybrid_command()
   @commands.has_guild_permissions(manage_roles=True)
   async def mute(self, ctx, member : discord.Member, *, time : TimeConverter = None):
-        """Mutes a member for the specified time- time in 2d 10h 3m 2s format ex:
-        .mute @Someone 1d"""
+        """Mutes a member for the specified time- time in 2d 10h 3m 2s format
+        Usage:
+        ```.mute {member} {time}```"""
         role = discord.utils.get(ctx.guild.roles, name="Muted")
         guild = ctx.guild
         if not role:

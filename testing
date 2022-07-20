@@ -1,0 +1,28 @@
+def get_prefix(client, message):
+  with open('prefix.json', r) as p:
+    prefixes = json.load(p)
+
+  return prefixes[str(message.guild.id)]
+
+
+
+@client.event
+async def on_guild_join(guild):
+  with open('prefix.json', r) as p:
+    prefixes = json.load(p)
+
+  prefixes[str(guild.id)] = "."
+
+  with open('prefix.json', w) as p:
+    json.dump(prefixes, p , indent = 4)
+
+
+@client.event
+async def on_guild_remove(guild):
+  with open('prefix.json', r) as p:
+    prefixes = json.load(p)
+
+  prefixes.pop(str(guild.id))
+
+  with open('prefix.json', w) as p:
+    json.dump(prefixes, p , indent = 4)

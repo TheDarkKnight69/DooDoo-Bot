@@ -1,9 +1,41 @@
-from discord.ext import commands, menus
+from discord.ext import commands
 import discord
 from discord import app_commands
 import os
 import asyncio
+import json
+import aiohttp
+import dateutil
+import time
+from googlesearch import search
 
+
+
+class Google(discord.ui.View):
+    def __init__(self, ctx):
+        super().__init__(timeout=60)
+        self.ctx = ctx
+
+    async def on_timeout(self):
+      for item in self.children:
+        item.disabled = True
+        await self.message.edit(view=self) 
+
+    @discord.ui.button(label='Screeshot Page', style=discord.ButtonStyle.green)
+    async def ss(self, interaction: discord.Interaction, button: discord.ui.Button):
+      async with aiohttp.ClientSession() as d:
+        async with d.get(f'https://image.thum.io/get/width/1200/crop/1200/allowJPG/{j}') as get_ss:
+          s = await get_ss.json()  # returns dict
+          ss= discord.Embed(title = f"`{site}`", url = site, color = discord.Color.random())
+          ss.set_image(url = f"https://image.thum.io/get/width/1200/crop/1200/allowJPG/{j}")
+          ss.set_footer(text = f"Requested by {ctx.author}")
+          await interaction.response.send_message(embed=ss, ephemeral = True)
+
+
+    @discord.ui.button(label='End Interaction', style=discord.ButtonStyle.grey)
+    async def endint(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.edit_message(view=self.clear_items())
+        self.stop()
 class Counter(discord.ui.View):
 
     # Define the actual button
@@ -27,6 +59,9 @@ class Misc(commands.Cog):
   @commands.Cog.listener()
   async def on_ready(self):
     print('Misc.py is loaded.')
+    self.bot.launch_time = datetime.datetime.utcnow()
+
+
 
   @commands.Cog.listener()
   async def on_member_join(self, member):
@@ -116,7 +151,63 @@ class Misc(commands.Cog):
     ```.count```"""
     await ctx.send(embed = discord.Embed(title = "Press the button", color = discord.Color.random()), view = Counter())
 
-    
+  @commands.command()
+  async def changeprefix(self, ctx, prefix):
+    with open('prefix.json', 'r') as p:
+      prefixes = json.load(p)
+    prefixes[str(ctx.guild.id)] = prefix
+    with open('prefix.json', 'w') as p:
+      json.dump(prefixes, p , indent = 4)
+
+    await ctx.send(f"Old prefix was `{ctx.prefix}`\n\nPrefix has successfully been changed to `{prefix}`")
+
+
+  @commands.command(name='uptime')
+  async def uptime(self, ctx: commands.Context):
+        """Gets the uptime of the bot"""
+        
+        delta_uptime = relativedelta(datetime.datetime.utcnow(), self.bot.launch_time)
+        days, hours, minutes, seconds = delta_uptime.days, delta_uptiem.hours, delta_uptime.minutes, delta_uptime.seconds
+
+        uptimes = {x[0]: x[1] for x in [('days', days), ('hours', hours),
+                                        ('minutes', minutes), ('seconds', seconds)] if x[1]}
+
+        last = "".join(value for index, value in enumerate(uptimes.keys()) if index == len(uptimes)-1)
+        uptime_string = "".join(
+            f"{v} {k}" if k != last else f" and {v} {k}" if len(uptimes) != 1 else f"{v} {k}"
+            for k, v in uptimes.items()
+        )
+        
+        await ctx.channel.send(f'I started {uptime_string} ago.')
+
+  @commands.command(aliases=['about'])
+  @commands.cooldown(1, 3, commands.BucketType.user)
+  async def info(self, ctx):
+    """See information about Doodoo Bot"""
+    info = await self.bot.application_info()
+
+    embed = discord.Embed(title=" Doodoo Bot Info", color=discord.Color.random())
+    embed.add_field(name="Developer", value=f"```\n{str(info.owner)}```", inline=False)
+    embed.add_field(name="Library", value=f"```\ndiscord.py {discord.__version__}```", inline=True)
+    embed.add_field(name="Total servers", value=f"```\n{len(self.bot.guilds)}```", inline=True)
+    embed.add_field(name="Total members", value=f"```\n{sum([g.member_count for g in self.bot.guilds])}```", inline=True)
+    embed.set_thumbnail(url=self.bot.user.avatar.url)
+    await ctx.reply(embed=embed, mention_author=False)
+
+  @commands.hybrid_command()
+  async def find(self, ctx, *, query):
+    author = ctx.author.mention
+    async with ctx.typing():
+        for j in search(query, num=1, stop=1, pause=2): 
+          queryembed = discord.Embed(title = "Google Search", description = j)
+          queryembed.set_author(name = ctx.author, icon_url = ctx.author.avatar)
+          await ctx.send(embed = queryembed, view = Google(ctx))
+  
+
+
+
+  
+      
     
  
 async def setup(client: commands.Bot) -> None:
