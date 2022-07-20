@@ -5,7 +5,6 @@ import asyncio
 import random
 import json
 import os
-from pretty_help import PrettyHelp, PrettyMenu
 import logging
 
 
