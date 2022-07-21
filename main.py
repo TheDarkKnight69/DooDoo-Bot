@@ -6,7 +6,7 @@ import random
 import json
 import os
 import logging
-
+from keep_alive import keep_alive
 
 
 MY_GUILD = discord.Object(id=894451313818099783)  # replace with your guild id
@@ -98,7 +98,7 @@ async def hello(interaction: discord.Interaction):
 
 
 
-
+keep_alive()
 client.run(os.environ.get('TOKEN'), log_handler=handler, log_level=logging.INFO)
   
 

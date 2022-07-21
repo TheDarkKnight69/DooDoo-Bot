@@ -1,10 +1,7 @@
 from discord.ext import commands
 import discord
-from typing import Optional, Set
-
-import discord
-from discord.ext import commands
 from typing import Optional, Set, List
+
 
 COLOUR = discord.Color.random()
 
@@ -36,9 +33,9 @@ class HelpView(discord.ui.View):
     return self._help_command.context.author == interaction.user
 
 
-class HelpCommand(commands.MinimalHelpCommand):
+class HelpCommand(commands.HelpCommand):
   def get_command_signature(self, command):
-    return '%s%s %s' % (self.context.clean_prefix, command.qualified_name, command.signature)
+        return '%s%s %s' % (self.context.clean_prefix, command.qualified_name, command.signature)
   async def _cog_select_options(self) -> List[discord.SelectOption]:
     options: List[discord.SelectOption] = []
     options.append(discord.SelectOption(
