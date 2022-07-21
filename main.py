@@ -1,12 +1,10 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from keep_alive import keep_alive
 import asyncio
 import random
 import json
 import os
-from pretty_help import PrettyHelp, PrettyMenu
 import logging
 
 
@@ -100,7 +98,7 @@ async def hello(interaction: discord.Interaction):
 
 
 
-keep_alive()
+
 client.run(os.environ.get('TOKEN'), log_handler=handler, log_level=logging.INFO)
   
 
