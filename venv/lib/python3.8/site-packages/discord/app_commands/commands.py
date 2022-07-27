@@ -598,7 +598,7 @@ class Command(Generic[GroupT, P, T]):
 
         return base
 
-    async def _invoke_error_handler(self, interaction: Interaction, error: AppCommandError) -> None:
+    async def _invoke_error_handlers(self, interaction: Interaction, error: AppCommandError) -> None:
         # These type ignores are because the type checker can't narrow this type properly.
         if self.on_error is not None:
             if self.binding is not None:
@@ -612,6 +612,10 @@ class Command(Generic[GroupT, P, T]):
 
             if parent.parent is not None:
                 await parent.parent.on_error(interaction, error)
+
+        binding_error_handler = getattr(self.binding, '__app_commands_error_handler__', None)
+        if binding_error_handler is not None:
+            await binding_error_handler(interaction, error)
 
     def _has_any_error_handlers(self) -> bool:
         if self.on_error is not None:

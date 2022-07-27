@@ -18,6 +18,17 @@ yarl = ">=1.0,<2.0"
 speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
+name = "async-cse"
+version = "0.3.0"
+description = "API wrapper for the Google Custom Search JSON API. https://developers.google.com/custom-search/v1/overview"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+aiohttp = "*"
+
+[[package]]
 name = "async-timeout"
 version = "3.0.1"
 description = "Timeout context manager for asyncio programs"
@@ -309,10 +320,13 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c6720f9f3896b7fcb00ef39c05f674708e4d68ca1b3e5027f4b769e478272c0b"
+content-hash = "e513ba1e4a06006eed266c0ecafd090cc5a5ea6ac99e442f6d8ac3436d4df2f9"
 
 [metadata.files]
 aiohttp = []
+async-cse = [
+    {file = "async_cse-0.3.0.tar.gz", hash = "sha256:fcb7c25331cb6fd410d1483b7b3ae0e3dd3cb8f071efbdffdb56082e4dee9859"},
+]
 async-timeout = []
 asyncpg = []
 attrs = []

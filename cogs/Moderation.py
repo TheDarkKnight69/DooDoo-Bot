@@ -42,12 +42,14 @@ class Moderation(commands.Cog):
 
   
   @commands.hybrid_command()
+  @commands.guild_only()
   @commands.has_guild_permissions(manage_messages = True)
   async def purge(self, ctx, amount: int):
     """Delete a number of messages"""
     await ctx.channel.purge(limit=amount)
 
   @commands.hybrid_command()
+  @commands.guild_only()
   @commands.has_guild_permissions(kick_members = True)
   async def kick(self, ctx, member: discord.Member, *, reason=None):
     """Yeet a member"""
@@ -55,6 +57,7 @@ class Moderation(commands.Cog):
     await ctx.send(f"{member} was successfully kicked! \n\nReason: {reason}")
 
   @commands.hybrid_command()
+  @commands.guild_only()
   @commands.has_guild_permissions(ban_members = True)
   async def ban(self, ctx, member: discord.Member, *, reason=None):
     """Use the ban hammer"""
@@ -62,6 +65,7 @@ class Moderation(commands.Cog):
     await ctx.send(f"{member.mention} was successfully banned! \n\nReason: {reason}")
     
   @commands.hybrid_command()
+  @commands.guild_only()
   @commands.has_guild_permissions(ban_members = True)
   async def unban(self, ctx, *, member):
     """Retract Ban Hammer"""
@@ -83,6 +87,7 @@ class Moderation(commands.Cog):
 
 
   @commands.hybrid_command(aliases = ['cr', 'makerole', 'crole'])
+  @commands.guild_only()
   @commands.has_guild_permissions(manage_roles = True)
   async def createrole(self, ctx, name , color):
     """ This command creates a role. 
@@ -108,6 +113,7 @@ class Moderation(commands.Cog):
 
 
   @commands.hybrid_command()
+  @commands.guild_only()
   @commands.has_guild_permissions(manage_roles=True)
   async def mute(self, ctx, member : discord.Member, *, time : TimeConverter = None):
         """Mutes a member for the specified time- time in 2d 10h 3m 2s format
@@ -140,6 +146,7 @@ class Moderation(commands.Cog):
         
 
   @commands.hybrid_command()
+  @commands.guild_only()
   @commands.has_guild_permissions(manage_roles = True)
   async def unmute(self, ctx, member: discord.Member):
     """Unmutes a person."""

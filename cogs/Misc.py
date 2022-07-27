@@ -7,7 +7,9 @@ import json
 import aiohttp
 import dateutil
 import time
-from googlesearch import search
+import async_cse
+import io
+import datetime
 
 
 
@@ -59,7 +61,7 @@ class Misc(commands.Cog):
   @commands.Cog.listener()
   async def on_ready(self):
     print('Misc.py is loaded.')
-    self.bot.launch_time = datetime.datetime.utcnow()
+    
 
 
 
@@ -79,7 +81,8 @@ class Misc(commands.Cog):
 
    
   @commands.hybrid_command(aliases = ['ui'])
-  async def info(self, ctx, *, member: discord.Member = None):
+  @commands.guild_only()
+  async def userinfo(self, ctx, *, member: discord.Member = None):
         """Shows a ton of info about the member in the server.
           Usage:
     ```.info <member>```"""
@@ -96,7 +99,7 @@ class Misc(commands.Cog):
         if voice is not None:
             vc = voice.channel
             other_people = len(vc.members) - 1
-            voice = f'{vc.name} with {other_people} others' if other_people else f'{vc.name} by themselves'
+            voice = f'In <#{vc.id}> with {other_people} others' if other_people else f'In <#{vc.id}> by themselves'
             e.add_field(name='Voice', value=voice, inline=False)
         if roles:
             roles = " ".join([role.mention for role in member.roles if role.name != "@everyone"])
@@ -114,6 +117,7 @@ class Misc(commands.Cog):
     await ctx.send(f"{str(emoji.url)}")
 
   @commands.hybrid_command()
+  @commands.guild_only()
   async def ping(self, ctx):
     """Ping Pong. Checks the round latency to the API. You wouldn't need this. Used to test the bot."""
     await ctx.send(f"Pong! Latency: `{round(self.bot.latency * 1000)}ms`")
@@ -121,6 +125,7 @@ class Misc(commands.Cog):
 
     
   @commands.hybrid_command(aliases = ['ss'])
+  @commands.guild_only()
   async def screenshot(self, ctx, *, site: str):
     """Feeling too lazy to go to a website on your own? Fear not, here is screenshot.
     Screenshots a website lmao
@@ -131,20 +136,21 @@ class Misc(commands.Cog):
     ss.set_footer(text = f"Requested by {ctx.author}")
     await ctx.send(embed = ss)
 
-  @commands.hybrid_command()
-  async def randomnumber(self, ctx, num1: int = None, num2: int = None):
-    """Gives a random number from your arguments. 
-    Usage: 
-    ```.randomnumber <num1><num2>```"""
-    if num1 == None:
-      num1 = 1
-    if num2 == None:
-      num2 = 99999
-    randomnumber = randint(num1, num2)
-    await ctx.reply(f"{randomnumber}")
+ # @commands.hybrid_command()
+  #async def randomnumber(self, ctx, num1: int = None, num2: int = None):
+ #   """Gives a random number from your arguments. 
+ #   Usage: 
+ #   ```.randomnumber <num1><num2>```"""
+ #   if num1 == None:
+ #     num1 = 1
+  #  if num2 == None:
+ #     num2 = 99999
+ #   randomnumber = randint(num1, num2)
+ #   await ctx.reply(f"{randomnumber}")
 
   
   @commands.hybrid_command()
+  @commands.guild_only()
   async def count(self, ctx):
     """Press a button lol\n\n
     Usage: 
@@ -152,6 +158,7 @@ class Misc(commands.Cog):
     await ctx.send(embed = discord.Embed(title = "Press the button", color = discord.Color.random()), view = Counter())
 
   @commands.command()
+  @commands.guild_only()
   async def changeprefix(self, ctx, prefix):
     with open('prefix.json', 'r') as p:
       prefixes = json.load(p)
@@ -162,25 +169,32 @@ class Misc(commands.Cog):
     await ctx.send(f"Old prefix was `{ctx.prefix}`\n\nPrefix has successfully been changed to `{prefix}`")
 
 
-  @commands.command(name='uptime')
-  async def uptime(self, ctx: commands.Context):
-        """Gets the uptime of the bot"""
-        
-        delta_uptime = relativedelta(datetime.datetime.utcnow(), self.bot.launch_time)
-        days, hours, minutes, seconds = delta_uptime.days, delta_uptiem.hours, delta_uptime.minutes, delta_uptime.seconds
+  @commands.command(name='uptime', aliases = ['up'])
+  @commands.guild_only()
+  @commands.cooldown(1, 3, commands.BucketType.user)
+  async def uptime(self, ctx):
+    """Gets the uptime of the bot"""
+    resolved_full = discord.utils.format_dt(self.bot.start_time, "F")
+    resolved_rel = discord.utils.format_dt(self.bot.start_time, "R")
+    date = datetime.datetime.utcnow()
+    date_resolved = discord.utils.format_dt(date, "F")
+    uptime = discord.Embed(color = discord.Color.random())
+    uptime.add_field(name = "Launched At", value = resolved_full, inline = False)
+    uptime.add_field(name = "Up since", value = resolved_rel)
+    uptime.set_author(name = self.bot.user.name, icon_url = self.bot.user.avatar.url)
+    uptime.set_footer(text = f"Requested by {ctx.author}" , icon_url = ctx.author.avatar.url)
+    uptime.set_thumbnail(url = ctx.author.avatar.url)
+    await ctx.send(embed = uptime)
 
-        uptimes = {x[0]: x[1] for x in [('days', days), ('hours', hours),
-                                        ('minutes', minutes), ('seconds', seconds)] if x[1]}
 
-        last = "".join(value for index, value in enumerate(uptimes.keys()) if index == len(uptimes)-1)
-        uptime_string = "".join(
-            f"{v} {k}" if k != last else f" and {v} {k}" if len(uptimes) != 1 else f"{v} {k}"
-            for k, v in uptimes.items()
-        )
+
+
+    
         
-        await ctx.channel.send(f'I started {uptime_string} ago.')
+        
 
   @commands.command(aliases=['about'])
+  @commands.guild_only()
   @commands.cooldown(1, 3, commands.BucketType.user)
   async def info(self, ctx):
     """See information about Doodoo Bot"""
@@ -194,15 +208,57 @@ class Misc(commands.Cog):
     embed.set_thumbnail(url=self.bot.user.avatar.url)
     await ctx.reply(embed=embed, mention_author=False)
 
+  @commands.hybrid_command(aliases = ['g', 'find', 'search'])
+  @commands.guild_only()
+  @commands.cooldown(1, 30, commands.BucketType.user)
+  async def google(self, ctx, *, query):
+    client = async_cse.Search(os.environ.get("google_api")) # create the Search client (uses Google by default!)
+
+    results = await client.search(query, safesearch=True) # returns a list of async_cse.Result objects
+    google = discord.Embed(title = "Google Search Results", color = discord.Color.random())
+    google.add_field(name = results[0].title, value = f"{results[0].url}\n{results[0].description}")
+    google.set_thumbnail(url = results[0].image_url)
+    await client.close()
+    await ctx.send(embed = google)
+
+
   @commands.hybrid_command()
-  async def find(self, ctx, *, query):
-    author = ctx.author.mention
-    async with ctx.typing():
-        for j in search(query, num=1, stop=1, pause=2): 
-          queryembed = discord.Embed(title = "Google Search", description = j)
-          queryembed.set_author(name = ctx.author, icon_url = ctx.author.avatar)
-          await ctx.send(embed = queryembed, view = Google(ctx))
+  @commands.guild_only()
+  @commands.cooldown(1, 3, commands.BucketType.user)
+  async def spotify(self, ctx, member: discord.Member=None):
+    member = member or ctx.author
+
+    spotify = discord.utils.find(lambda a: isinstance(a, discord.Spotify), member.activities)
+    if spotify is None:
+      return await ctx.send(f"**{member}** is not listening or connected to Spotify.")
+
+    params = {
+      'title': spotify.title,
+      'cover_url': spotify.album_cover_url,
+      'duration_seconds': spotify.duration.seconds,
+      'start_timestamp': spotify.start.timestamp(),
+      'artists': spotify.artists
+    }
   
+    async with aiohttp.ClientSession() as session:
+      async with session.get('https://api.jeyy.xyz/discord/spotify', params=params) as response:
+        buf = io.BytesIO(await response.read())
+        artists = ', '.join(spotify.artists)
+        await ctx.send(f"> **{member}** is listening to **{spotify.title}** by **{artists}**", file=discord.File(buf, 'spotify.png'))
+
+
+
+
+  @commands.Cog.listener()
+  async def on_command_error(self, ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+      seconds = error.retry_after
+      seconds = round(seconds, 2)
+      hours, remainder = divmod(int(seconds), 3600)
+      minutes, seconds = divmod(remainder, 60)
+      await ctx.send(f'You are on Cooldown: {minutes}m and {seconds}s remaining.')
+
+    
 
 
 

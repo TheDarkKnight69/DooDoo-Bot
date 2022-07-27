@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 from typing import Optional, Set, List
+from difflib import get_close_matches
 
 
 COLOUR = discord.Color.random()
@@ -54,6 +55,14 @@ class HelpCommand(commands.HelpCommand):
         description = cog.description[:100] if cog and cog.description else None
       ))
     return options 
+    
+
+# In your HelpCommand
+  async def command_not_found(self, string):
+  # your own stuff here
+    commands_list = [str(cmd) for cmd in self.context.bot.commands]
+    if dym := '\n'.join(get_close_matches(string, commands_list)):
+      return f'Could not find that command. Perhaps you meant: \n> {dym}'
 
   async def _help_embed(
     self, title: str, description: Optional[str] = None, mapping: Optional[dict] = None,
@@ -102,10 +111,10 @@ class HelpCommand(commands.HelpCommand):
   async def send_bot_help(self, mapping: dict):
     embed = discord.Embed(title = "Bot Help", description = 
                           
-      f"Hello! Welcome to the help page.\nUse {self.context.clean_prefix}help command for more info on a command.\nUse {self.context.clean_prefix}help category for more info on a category.\nUse the dropdown menu below to select a category."
+      f"Hello! Welcome to the help page.\n\n\nUse {self.context.clean_prefix}help command for more info on a command.\n»»————-　　————-««\nUse {self.context.clean_prefix}help category for more info on a category.\n»»————-　　————-««\nUse the dropdown menu below to select a category."
 )
     embed.add_field(name = "Support Server", value = "For more help, consider joining the official server over at https://discord.gg/ygxUtu3gEF", inline = False)
-    embed.add_field(name = "Who are you?", value = f"I'm a bot made by Damian Wayne#7983. I'm a pretty neat Discord bot! I've been running since. I have features such as moderation, memes, image manipulation, and more to come. You can get more information on my commands by using the dropdown below.\n\n\n\n\n I'm also open source [Github](https://github.com/TheDarkKnight69/DooDoo-Bot)")
+    embed.add_field(name = "Who am I?", value = f"I'm a bot made by Damian Wayne#7983. I'm a pretty neat Discord bot! I've been running since. I have features such as moderation, memes, image manipulation, and more to come. You can get more information on my commands by using the dropdown below.\n\n\n\n I'm also open source: [Github](https://github.com/TheDarkKnight69/DooDoo-Bot)")
     options = await self._cog_select_options()
     self.response = await self.get_destination().send(embed = embed, view = HelpView(self, options))
     

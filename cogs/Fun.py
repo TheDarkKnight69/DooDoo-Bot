@@ -55,6 +55,7 @@ class Fun(commands.Cog):
     print('Fun.py is loaded.')
 
   @commands.hybrid_command(name = '8ball', description="Ask the 8ball what you want.")
+  @commands.guild_only()
   async def _8ball(self, ctx, *, question : str):
     """Ask the magic 8ball anything!!
        Usage: 
@@ -84,6 +85,7 @@ class Fun(commands.Cog):
     await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
   @commands.hybrid_command(name = 'insult')
+  @commands.guild_only()
   async def insult(self, ctx, *, member:Optional[discord.Member]):
     """Insult anyone :D
        Usage: 
@@ -96,6 +98,7 @@ class Fun(commands.Cog):
         await ctx.send(f'{member.mention}, {insult["insult"]}')
 
   @commands.hybrid_command(name = 'compliment')
+  @commands.guild_only()
   async def compliment(self, ctx, *, member:discord.Member = None):
     """Compliment anyone ^-^ 
        Usage: 
@@ -107,7 +110,8 @@ class Fun(commands.Cog):
           member = ctx.author
         await ctx.send(f"{member.mention},  {compliment['compliment'].capitalize()}")
     
-  @commands.hybrid_command(name = 'doggo')  
+  @commands.hybrid_command(name = 'doggo')
+  @commands.guild_only()
   async def doggie(self, ctx):
     """Get a dog pic!! 
         Usage: 
@@ -121,6 +125,7 @@ class Fun(commands.Cog):
     
   
   @commands.hybrid_command(name = 'meme')
+  @commands.guild_only()
   async def meme(self, ctx):
     """Gets the hottest memes from r/memes.
       Usage: 
@@ -138,6 +143,7 @@ class Fun(commands.Cog):
         
         
   @commands.hybrid_command(name = 'wholesomememe')
+  @commands.guild_only()
   async def wholesome(self, ctx):  
     """Gets the hottest memes from r/wholesomememes.
       Usage: 
@@ -152,6 +158,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=meme, view = Meme(ctx))
         
   @commands.hybrid_command(name = 'holup')
+  @commands.guild_only()
   async def holup(self, ctx): 
     """Ayo, Hol UP!
     Gets the hottest memes from r/HolUp. 
@@ -167,6 +174,7 @@ class Fun(commands.Cog):
     await ctx.send(embed=meme, view = Meme(ctx))
 
   @commands.hybrid_command(name = 'meow')
+  @commands.guild_only()
   async def cat(self, ctx):
     """Gives a cute cat picture :D
       Usage: 
@@ -181,6 +189,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=cat)
   
   @commands.hybrid_command(name = 'joke')
+  @commands.guild_only()
   async def joke(self, ctx):
     """Gives you a funny joke.
       Usage: 
@@ -193,6 +202,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=joke)
 
   @commands.hybrid_command(name = 'darkjoke')
+  @commands.guild_only()
   async def darkjoke(self, ctx):
     """Gives you a dark joke 💀
      Usage: 
@@ -204,6 +214,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=djoke)
 
   @commands.hybrid_command(name = 'activity')
+  @commands.guild_only()
   async def activity(self, ctx):
     """Idek why I added this"""
     async with aiohttp.ClientSession() as e:
@@ -215,8 +226,9 @@ class Fun(commands.Cog):
 
 
   @commands.hybrid_command(name = 'wordle')
+  @commands.guild_only()
   async def wordle(self, ctx):
-    """A wordle clone for you to play in discord. It has over 30k words!!! New modes will be added in the long run!!!!. \n To play, reply to the embed with your guess, and let the bot do its magic. :D
+    """A wordle clone for you to play in discord. It has over 30k words!!! \n To play, reply to the embed with your guess.
     Usage: 
     ```.wordle```"""
     puzzle_id = random_puzzle_id()
