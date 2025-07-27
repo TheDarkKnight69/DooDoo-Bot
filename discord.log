@@ -1,1 +1,4 @@
-[2025-07-27 10:27:14] [INFO    ] discord.client: logging in using static token
+[2025-07-27 12:46:15] [INFO    ] discord.client: logging in using static token
+[2025-07-27 12:46:21] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: da0036bba01c11d273dd94c71158f84a).
+[2025-07-27 12:47:42] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "ping" is not found
